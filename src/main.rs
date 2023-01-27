@@ -5,16 +5,24 @@ fn main() {
 
     let contents = fs::read_to_string(&fp[1]);
 
-    let mut lexer = Lexer::new(contents.unwrap());
+    let mut lexer = Lexer::new(strip(contents.unwrap()));
     let toks = lexer.lex();
 
     println!("{:?}", toks);
 }
 
+fn strip(contents: String) -> String {
+    let mut cloned = contents.to_string();
+    cloned = cloned.replace('\n', " ");
+    cloned = cloned.replace('\r', "");
+    return cloned;
+}
+
 #[derive(Debug)]
 enum TokenKind {
     String,
-    Var
+    Var,
+    Put
 }
 
 #[derive(Debug)]
@@ -74,7 +82,6 @@ impl Lexer {
         let mut buf = String::new();
         while self.cur_char() != ' ' {
             buf.push(self.cur_char());
-            println!("{}", self.cur_char());
             self.adv();
         }
         self.adv();
@@ -88,6 +95,10 @@ impl Lexer {
             _ if tok_bytes[0] == '\'' && tok_bytes.last().unwrap().clone() == '\'' => {
                 tok = self.strip_string(tok);
                 new_tok = Token::new(TokenKind::String, tok);
+            }
+
+            _ if tok == "pt" => {
+                new_tok = Token::new(TokenKind::Put, tok);
             }
 
             _ => {
