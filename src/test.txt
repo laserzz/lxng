@@ -1,2 +1,5 @@
-rah 'aaa'
+var 'this is a variable'
+othervar 'aaa'
 pt 'aaa'
+pt var
+pt othervar
